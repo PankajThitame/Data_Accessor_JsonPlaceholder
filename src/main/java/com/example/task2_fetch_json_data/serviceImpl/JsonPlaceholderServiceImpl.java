@@ -1,11 +1,14 @@
 package com.example.task2_fetch_json_data.serviceImpl;
 
+import com.example.task2_fetch_json_data.DTO.PostDto;
 import com.example.task2_fetch_json_data.service.JsonPlaceholderService;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 import java.util.List;
 import java.util.Map;
+
 
 @Service
 public class JsonPlaceholderServiceImpl implements JsonPlaceholderService
@@ -23,6 +26,22 @@ public class JsonPlaceholderServiceImpl implements JsonPlaceholderService
                 .uri("/posts")
                 .retrieve()
                 .body(List.class);
+    }
+
+    public List<PostDto> fetchAllDatap() {
+        return restClient.get()
+                .uri("/posts")
+                .retrieve()
+                .toEntity(new ParameterizedTypeReference<List<PostDto>>() {
+                }).getBody();
+    }
+
+
+    public PostDto fetchDataById(String id ) {
+        return restClient.get()
+                .uri("/posts/{id}",Long.parseLong(id))
+                .retrieve()
+                .toEntity(PostDto.class).getBody();
     }
 
     @Override

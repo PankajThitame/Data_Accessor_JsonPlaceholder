@@ -33,12 +33,12 @@ public class JsonPlaceholder
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping("/comments")
-    public ResponseEntity<List<Map<String, Object>>> getCommentsDataByPostId(@RequestParam Long postId)
-    {
-        List<Map<String, Object>> result = jsonPlaceholder.fetchAllCommentsDataByPostId(postId);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
+//    @GetMapping("/comments")
+//    public ResponseEntity<List<Map<String, Object>>> getCommentsDataByPostId(@RequestParam Long postId)
+//    {
+//        List<Map<String, Object>> result = jsonPlaceholder.fetchAllCommentsDataByPostId(postId);
+//        return new ResponseEntity<>(result, HttpStatus.OK);
+//    }
 
     @GetMapping("/posts/{postId}/comments")
     public ResponseEntity<List<Map<String, Object>>> getCommentsByPostId(@PathVariable Long postId)
