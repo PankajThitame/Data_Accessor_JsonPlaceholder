@@ -3,9 +3,8 @@ package com.example.task2_fetch_json_data.DTO;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record PostDto(
+public record AlbumDto(
         Long id,
-        Long userId, // Maps the flat user integer reference from the JSON API
-        String title,
-        String body
+        Long userId,
+        String title
 ) {}
