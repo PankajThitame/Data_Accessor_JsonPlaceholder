@@ -172,7 +172,7 @@ public class JsonPlaceholderServiceImpl implements JsonPlaceholderService
         List<UserDto> userDtos = fetchUsersFromWeb();
         for (UserDto uDto : userDtos) {
             User user = modelMapper.map(uDto, User.class);
-            user.setId(uDto.id()); // Manual fallback assignment for Record mapping safety
+            user.setUuidId(uDto.id()); // Manual fallback assignment for Record mapping safety
 
             if (uDto.address() != null) {
                 Address address = modelMapper.map(uDto.address(), Address.class);
@@ -197,7 +197,7 @@ public class JsonPlaceholderServiceImpl implements JsonPlaceholderService
         List<PostDto> postDtos = fetchPostsFromWeb();
         for (PostDto pDto : postDtos) {
             Post post = modelMapper.map(pDto, Post.class);
-            post.setId(pDto.id());
+            post.setUuidId(pDto.id());
 
             // Establish Relational Mapping back to the Parent User
             userRepository.findById(pDto.userId()).ifPresent(post::setUser);
@@ -211,7 +211,7 @@ public class JsonPlaceholderServiceImpl implements JsonPlaceholderService
         List<CommentDto> commentDtos = fetchCommentsFromWeb();
         for (CommentDto cDto : commentDtos) {
             Comment comment = modelMapper.map(cDto, Comment.class);
-            comment.setId(cDto.id());
+            comment.setUuidId(cDto.id());
 
             // Establish Relational Mapping back to the Parent Post
             postRepository.findById(cDto.postId()).ifPresent(comment::setPost);
@@ -225,7 +225,7 @@ public class JsonPlaceholderServiceImpl implements JsonPlaceholderService
         List<AlbumDto> albumDtos = fetchAlbumsFromWeb();
         for (AlbumDto aDto : albumDtos) {
             Album album = modelMapper.map(aDto, Album.class);
-            album.setId(aDto.id());
+            album.setUuidId(aDto.id());
 
             // Establish Relational Mapping back to the Parent User
             userRepository.findById(aDto.userId()).ifPresent(album::setUser);
@@ -239,7 +239,7 @@ public class JsonPlaceholderServiceImpl implements JsonPlaceholderService
         List<PhotoDto> photoDtos = fetchPhotosFromWeb();
         for (PhotoDto phDto : photoDtos) {
             Photo photo = modelMapper.map(phDto, Photo.class);
-            photo.setId(phDto.id());
+            photo.setUuidId(phDto.id());
 
             // Establish Relational Mapping back to the Parent Album
             albumRepository.findById(phDto.albumId()).ifPresent(photo::setAlbum);
@@ -253,7 +253,7 @@ public class JsonPlaceholderServiceImpl implements JsonPlaceholderService
         List<TodoDto> todoDtos = fetchTodosFromWeb();
         for (TodoDto tDto : todoDtos) {
             Todo todo = modelMapper.map(tDto, Todo.class);
-            todo.setId(tDto.id());
+            todo.setUuidId(tDto.id());
             todo.setCompleted(tDto.completed()); // Ensure boolean primitive mapping is explicitly set
 
             // Establish Relational Mapping back to the Parent User
