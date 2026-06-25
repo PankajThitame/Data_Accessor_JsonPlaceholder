@@ -1,7 +1,9 @@
 package com.example.task2_fetch_json_data.controller;
 
+import com.example.task2_fetch_json_data.DTO.UserDto;
 import com.example.task2_fetch_json_data.entity.User;
 import com.example.task2_fetch_json_data.repository.UserRepository;
+import com.example.task2_fetch_json_data.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -20,15 +22,14 @@ import java.util.Map;
 public class UserController
 {
     @Autowired
-    UserRepository userRepository;
+    UserService userService;
 
     Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @GetMapping("/")
-    public ResponseEntity<List<User>> getAllUsers()
+    public ResponseEntity<List<UserDto>> getAllUsers()
     {
-        List<User> result = userRepository.findAll();
         logger.info("getAllUsers");
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        return userService.getAllUsers();
     }
 }
