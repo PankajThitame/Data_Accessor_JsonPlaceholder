@@ -16,8 +16,8 @@ public class CommentsServiceImpl implements CommentService
 
     @Override
     public List<CommentDto> fetchCommentsFromPostId(UUID postId) {
-        // 1. Fetch the raw entity list from PostgreSQL using the non-primary key field
-        List<Comment> comments = commentRepository.findByPostId(postId);
+        // 1. Fetch the raw entity list from PostgreSQL using the post's UUID PK
+        List<Comment> comments = commentRepository.findByPostUuidId(postId);
 
         // 2. Map the entities into your immutable DTO records using ModelMapper
         return comments.stream()
@@ -25,11 +25,11 @@ public class CommentsServiceImpl implements CommentService
                     // Map top-level matching fields (id, name, email, body)
                     CommentDto dto = modelMapper.map(commentEntity, CommentDto.class);
 
-                    // If your CommentDto expects a flat postId, map it explicitly to be safe
+                    // Explicitly map externalId (Long) fields for the DTO
                     if (commentEntity.getPost() != null) {
                         dto = new CommentDto(
-                                commentEntity.getUuidId(),
-                                commentEntity.getPost().getUuidId(), // Sets the post identifier
+                                commentEntity.getExternalId(),              // Long: JSONPlaceholder comment id
+                                commentEntity.getPost().getExternalId(),    // Long: JSONPlaceholder post id
                                 commentEntity.getName(),
                                 commentEntity.getEmail(),
                                 commentEntity.getBody()

@@ -23,7 +23,7 @@ public class Post {
     private java.util.UUID uuidId; // 🔑 New Primary Key
 
     @Column(name = "external_id")
-    private Long Id; // 🌐 Old post ID
+    private Long externalId; // 🌐 Old post ID
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)

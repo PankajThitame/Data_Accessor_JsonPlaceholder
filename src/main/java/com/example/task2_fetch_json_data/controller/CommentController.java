@@ -11,27 +11,23 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
-public class CommentController
-{
+public class CommentController {
     @Autowired
     CommentRepository commentRepository;
 
     @GetMapping("/comments")
-    public ResponseEntity<List<Comment>> getAllComments()
-    {
+    public ResponseEntity<List<Comment>> getAllComments() {
         List<Comment> result = commentRepository.findAll();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping("/posts/{postId}/comments")
-    public ResponseEntity<List<Comment>> getCommentsByPostId(@PathVariable UUID postId)
-    {
-        List<Comment> result = commentRepository.findByPostId(postId);
+    public ResponseEntity<List<Comment>> getCommentsByPostId(@PathVariable UUID postId) {
+        List<Comment> result = commentRepository.findByPostUuidId(postId);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

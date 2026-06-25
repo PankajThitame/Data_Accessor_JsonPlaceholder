@@ -169,10 +169,18 @@ public class JsonPlaceholderServiceImpl implements JsonPlaceholderService
     @Override
     public void syncAndSaveToPostgres() {
 
+        // ==========================================
+        // 1. SYNC USERS (Root entity, no dependencies)
+        // ==========================================
         List<UserDto> userDtos = fetchUsersFromWeb();
         for (UserDto uDto : userDtos) {
-            User user = modelMapper.map(uDto, User.class);
-            user.setUuidId(uDto.id()); // Manual fallback assignment for Record mapping safety
+            User user = new User();
+            user.setExternalId(uDto.id()); // Store JSONPlaceholder integer ID in externalId
+            user.setName(uDto.name());
+            user.setUsername(uDto.username());
+            user.setEmail(uDto.email());
+            user.setPhone(uDto.phone());
+            user.setWebsite(uDto.website());
 
             if (uDto.address() != null) {
                 Address address = modelMapper.map(uDto.address(), Address.class);
@@ -196,11 +204,13 @@ public class JsonPlaceholderServiceImpl implements JsonPlaceholderService
         // ==========================================
         List<PostDto> postDtos = fetchPostsFromWeb();
         for (PostDto pDto : postDtos) {
-            Post post = modelMapper.map(pDto, Post.class);
-            post.setUuidId(pDto.id());
+            Post post = new Post();
+            post.setExternalId(pDto.id());
+            post.setTitle(pDto.title());
+            post.setBody(pDto.body());
 
-            // Establish Relational Mapping back to the Parent User
-            userRepository.findById(pDto.userId()).ifPresent(post::setUser);
+            // Look up parent User by externalId (JSONPlaceholder integer), not by UUID PK
+            userRepository.findByExternalId(pDto.userId()).ifPresent(post::setUser);
 
             postRepository.save(post);
         }
@@ -210,11 +220,14 @@ public class JsonPlaceholderServiceImpl implements JsonPlaceholderService
         // ==========================================
         List<CommentDto> commentDtos = fetchCommentsFromWeb();
         for (CommentDto cDto : commentDtos) {
-            Comment comment = modelMapper.map(cDto, Comment.class);
-            comment.setUuidId(cDto.id());
+            Comment comment = new Comment();
+            comment.setExternalId(cDto.id());
+            comment.setName(cDto.name());
+            comment.setEmail(cDto.email());
+            comment.setBody(cDto.body());
 
-            // Establish Relational Mapping back to the Parent Post
-            postRepository.findById(cDto.postId()).ifPresent(comment::setPost);
+            // Look up parent Post by externalId
+            postRepository.findByExternalId(cDto.postId()).ifPresent(comment::setPost);
 
             commentRepository.save(comment);
         }
@@ -224,11 +237,12 @@ public class JsonPlaceholderServiceImpl implements JsonPlaceholderService
         // ==========================================
         List<AlbumDto> albumDtos = fetchAlbumsFromWeb();
         for (AlbumDto aDto : albumDtos) {
-            Album album = modelMapper.map(aDto, Album.class);
-            album.setUuidId(aDto.id());
+            Album album = new Album();
+            album.setExternalId(aDto.id());
+            album.setTitle(aDto.title());
 
-            // Establish Relational Mapping back to the Parent User
-            userRepository.findById(aDto.userId()).ifPresent(album::setUser);
+            // Look up parent User by externalId
+            userRepository.findByExternalId(aDto.userId()).ifPresent(album::setUser);
 
             albumRepository.save(album);
         }
@@ -238,11 +252,14 @@ public class JsonPlaceholderServiceImpl implements JsonPlaceholderService
         // ==========================================
         List<PhotoDto> photoDtos = fetchPhotosFromWeb();
         for (PhotoDto phDto : photoDtos) {
-            Photo photo = modelMapper.map(phDto, Photo.class);
-            photo.setUuidId(phDto.id());
+            Photo photo = new Photo();
+            photo.setExternalId(phDto.id());
+            photo.setTitle(phDto.title());
+            photo.setUrl(phDto.url());
+            photo.setThumbnailUrl(phDto.thumbnailUrl());
 
-            // Establish Relational Mapping back to the Parent Album
-            albumRepository.findById(phDto.albumId()).ifPresent(photo::setAlbum);
+            // Look up parent Album by externalId
+            albumRepository.findByExternalId(phDto.albumId()).ifPresent(photo::setAlbum);
 
             photoRepository.save(photo);
         }
@@ -252,12 +269,13 @@ public class JsonPlaceholderServiceImpl implements JsonPlaceholderService
         // ==========================================
         List<TodoDto> todoDtos = fetchTodosFromWeb();
         for (TodoDto tDto : todoDtos) {
-            Todo todo = modelMapper.map(tDto, Todo.class);
-            todo.setUuidId(tDto.id());
-            todo.setCompleted(tDto.completed()); // Ensure boolean primitive mapping is explicitly set
+            Todo todo = new Todo();
+            todo.setExternalId(tDto.id());
+            todo.setTitle(tDto.title());
+            todo.setCompleted(tDto.completed());
 
-            // Establish Relational Mapping back to the Parent User
-            userRepository.findById(tDto.userId()).ifPresent(todo::setUser);
+            // Look up parent User by externalId
+            userRepository.findByExternalId(tDto.userId()).ifPresent(todo::setUser);
 
             todoRepository.save(todo);
         }
@@ -274,14 +292,20 @@ public class JsonPlaceholderServiceImpl implements JsonPlaceholderService
         }
     }
 
-//    @EventListener(ApplicationReadyEvent.class)
-//    public void runSyncOnStartup() {
-//        System.out.println("🚀 App Initialised: Triggering baseline database synchronization...");
-//        try {
-//            this.syncAndSaveToPostgres();
-//            System.out.println("✅ Baseline startup synchronization complete!");
-//        } catch (Exception e) {
-//            System.err.println("❌ Startup synchronization failed: " + e.getMessage());
-//        }
-//    }
+    @EventListener(ApplicationReadyEvent.class)
+    public void runSyncOnStartup() {
+        // Only seed data if the database is empty — prevents duplicate inserts on every restart
+        long userCount = userRepository.count();
+        if (userCount == 0) {
+            System.out.println("🚀 Database is empty. Triggering baseline data synchronization from JSONPlaceholder API...");
+            try {
+                this.syncAndSaveToPostgres();
+                System.out.println("✅ Baseline startup synchronization complete! All tables populated.");
+            } catch (Exception e) {
+                System.err.println("❌ Startup synchronization failed: " + e.getMessage());
+            }
+        } else {
+            System.out.println("ℹ️ Database already has " + userCount + " users. Skipping startup sync.");
+        }
+    }
 }
