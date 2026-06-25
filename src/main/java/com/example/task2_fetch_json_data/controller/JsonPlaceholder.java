@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 @RestController
 //@RequestMapping("/api/")
@@ -14,8 +15,11 @@ public class JsonPlaceholder
 {
     final JsonPlaceholderService jsonPlaceholder;
 
+    Logger logger = Logger.getLogger(JsonPlaceholder.class.getName());
+
     public JsonPlaceholder(JsonPlaceholderService jsonPlaceholder)
     {
+        logger.info("JsonPlaceholder constructor");
         this.jsonPlaceholder =  jsonPlaceholder;
     }
 
