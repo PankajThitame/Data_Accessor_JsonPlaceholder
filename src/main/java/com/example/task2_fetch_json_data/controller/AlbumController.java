@@ -2,6 +2,8 @@ package com.example.task2_fetch_json_data.controller;
 
 import com.example.task2_fetch_json_data.entity.Album;
 import com.example.task2_fetch_json_data.repository.AlbumRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,9 +22,12 @@ public class AlbumController
     @Autowired
     AlbumRepository albumRepository;
 
+    Logger logger = LoggerFactory.getLogger(AlbumController.class);
+
     @GetMapping("/")
     public ResponseEntity<List<Album>> getAllAlbums()
     {
+        logger.info("Album Controller getAllAlbums");
         List<Album> result = albumRepository.findAll();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

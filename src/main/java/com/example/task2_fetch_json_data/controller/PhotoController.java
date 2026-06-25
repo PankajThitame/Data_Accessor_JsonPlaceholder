@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 @RestController
@@ -19,10 +21,13 @@ public class PhotoController
     @Autowired
     PhotoRepository photoRepository;
 
+    Logger logger = Logger.getLogger(PhotoController.class.getName());
+
     @GetMapping("/")
     public ResponseEntity<List<Photo>> getAllPhotos()
     {
         List<Photo> result = photoRepository.findAll();
+        logger.info("getAllPhotos==============");
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }
