@@ -1,7 +1,9 @@
 package com.example.task2_fetch_json_data.controller;
 
+import com.example.task2_fetch_json_data.DTO.PhotoDto;
 import com.example.task2_fetch_json_data.entity.Photo;
 import com.example.task2_fetch_json_data.repository.PhotoRepository;
+import com.example.task2_fetch_json_data.service.PhotoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,15 +21,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class PhotoController
 {
     @Autowired
-    PhotoRepository photoRepository;
+    PhotoService photoService;
 
     Logger logger = Logger.getLogger(PhotoController.class.getName());
 
     @GetMapping("/")
-    public ResponseEntity<List<Photo>> getAllPhotos()
+    public ResponseEntity<List<PhotoDto>> getAllPhotos()
     {
-        List<Photo> result = photoRepository.findAll();
-        logger.info("getAllPhotos==============");
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        logger.info("getAllPhotos");
+        return photoService.getAllPhotos();
     }
 }

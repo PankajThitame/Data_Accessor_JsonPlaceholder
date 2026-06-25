@@ -1,7 +1,9 @@
 package com.example.task2_fetch_json_data.controller;
 
+import com.example.task2_fetch_json_data.DTO.TodoDto;
 import com.example.task2_fetch_json_data.entity.Todo;
 import com.example.task2_fetch_json_data.repository.TodoRepository;
+import com.example.task2_fetch_json_data.service.TodoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -19,15 +21,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class TodoController
 {
     @Autowired
-    TodoRepository todoRepository;
+    TodoService todoService;
 
     Logger logger = LoggerFactory.getLogger(TodoController.class);
 
     @GetMapping("/")
-    public ResponseEntity<List<Todo>> getAllTodos()
+    public ResponseEntity<List<TodoDto>> getAllTodos()
     {
-        List<Todo> result = todoRepository.findAll();
-        logger.info("getAllTodos");
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        return todoService.getAllTodos();
     }
 }
